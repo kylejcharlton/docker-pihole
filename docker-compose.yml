@@ -1,0 +1,55 @@
+version: "3.9"
+
+services:
+  pihole:
+    container_name: pihole
+    image: pihole/pihole:latest
+    dns:
+      - 127.0.0.1
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+    #  - "67:67/udp" # Only required if you are using Pi-hole as your DHCP server
+      - "8069:80/tcp"
+    env_file:
+      - './pihole.env'
+    volumes:
+      - './etc-pihole:/etc/pihole'
+      - './etc-dnsmasq.d:/etc/dnsmasq.d'    
+    cap_add:
+      - NET_ADMIN
+    networks:
+      pihole-net:
+        ipv4_address: 10.0.0.3
+        ipv6_address: fd00:dead:beee::3     # Remove if you do not have IPv6 
+
+      # Not required. This is for additional functionality for my own use
+      nginx-proxy-net:
+        ipv4_address: 10.1.0.3
+        ipv6_address: fd00:dead:beef::3
+    restart: unless-stopped
+
+  cloudflared:
+    container_name: cloudflared
+    image: visibilityspots/cloudflared:latest
+    env_file:
+      - './cloudflared.env'
+    networks:
+      pihole-net:
+        ipv4_address: 10.0.0.2
+        ipv6_address: fd00:dead:beee::2     # Remove if you do not have IPv6
+    restart: unless-stopped
+
+    
+networks:
+  pihole-net:
+    driver: bridge
+    enable_ipv6: true   # Set false if you do not have IPv6
+    ipam:
+      config:
+        - subnet: 10.0.0.0/29
+        - subnet: fd00:dead:beee::/48   # Remove if you do not have IPv6
+
+  nginx-proxy-net:
+    external: true
+    name: nginx-proxy-net
