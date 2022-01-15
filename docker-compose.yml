@@ -4,6 +4,7 @@ services:
   pihole:
     container_name: pihole
     image: pihole/pihole:latest
+    shm_size: '4gb'
     dns:
       - 127.0.0.1
     ports:
