@@ -9,6 +9,9 @@ funnel queries directly to Pi-Hole so that it can be accessable outside of your 
 a domain you own through either a DDNS service or through a registrar along with a way to generate and renew
 certificates to use for HTTPS and TLS.
 
+Environment variables can be set by creating pihole.env and cloudflared.env in the same directory as the
+docker-compose.yml. Examples are included in this repository.
+
 See the respective repositories for additional configuration:
 
 - [pihole/pihole](https://github.com/pi-hole/docker-pi-hole)
